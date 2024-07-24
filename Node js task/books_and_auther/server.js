@@ -1,6 +1,7 @@
 // app.js
 const express = require('express');
 const booksRoutes = require('./router/books.router');
+const authorsRoutes = require('./router/author.route');
 const { connectToDb } = require('./connections');
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', booksRoutes);
+app.use('/api', authorsRoutes);
 
 // Start the server
 app.listen(port, async () => {
