@@ -12,4 +12,17 @@ const getAllAuthor = async (req, res) => {
 };
 
 
-module.exports = {getAllAuthor}
+const countAuthors = async(req,res) =>{
+  try {
+  const db  = await connectToDb();
+  const authors = db.collection("authors");
+  const result = await authors.find().count();
+  res.status(200).json({message:"total authors is "+result})
+  } catch (error) {
+    res.status(500).json({message:err});
+  }
+
+}
+
+
+module.exports = {getAllAuthor,countAuthors}

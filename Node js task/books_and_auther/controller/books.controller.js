@@ -1,6 +1,7 @@
 // controllers/booksController.js
 const { connectToDb } = require("../connections");
 
+// get all books data
 const getBooks = async (req, res) => {
   try {
     const db = await connectToDb();
@@ -68,9 +69,11 @@ const getBooks = async (req, res) => {
     const result = await books.aggregate(pipeline).toArray();
     res.status(200).json({ message: result });
   } catch (err) {
-    res.status(500).json({ err: message });
+    res.status(500).json({ message: err });
   }
 };
+
+// get count of books.
 
 const countBooks = async (req, res) => {
   try {
@@ -79,8 +82,23 @@ const countBooks = async (req, res) => {
     const result = await books.find().count();
     res.status(200).json({ message: "total books of count is " + result });
   } catch (error) {
-    res.status(500).json({ err: message });
+    res.status(500).json({ message: error });
   }
 };
 
-module.exports = { getBooks, countBooks };
+// get books who has audible books.
+
+const existAudibleBooks = async (req, res) => {
+  try {
+    const db = await connectToDb();
+    const books = db.collection("books");
+    const result = await books
+      .find({ audiobook_id: { $exists: true } })
+      .toArray();
+    res.status(200).json({ message: result });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+};
+
+module.exports = { getBooks, countBooks, existAudibleBooks };
