@@ -30,11 +30,9 @@ const countAuthorBooks = async (req, res) => {
   try {
     const db = await connectToDb();
     const authors = db.collection("books");
-    const result = await authors
-      .aggregate([
+    const result = await authors.aggregate([
         {
-          $group: {
-            _id: "$author_id", // Group by author_id
+          $group: {_id: "$author_id", // Group by author_id
             bookCount: { $sum: 1 }, // Count the number of books for each author
           },
         },
@@ -56,14 +54,13 @@ const countAuthorBooks = async (req, res) => {
               $concat: [
                 "$author.first_name", // First name field
                 " ", // Space between first name and last name
-                "$author.last_name" // Last name field
-              ]
+                "$author.last_name", // Last name field
+              ],
             }, // Replace with the actual field name for the author's first name
             bookCount: 1, // Include the count of books
           },
         },
-      ])
-      .toArray();
+      ]).toArray();
     res.status(200).json({ message: result });
   } catch (error) {
     res.status(500).json({ message: error });
