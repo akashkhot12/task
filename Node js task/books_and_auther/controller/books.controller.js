@@ -1,10 +1,10 @@
 // controllers/booksController.js
-const { connectToDb } = require('../connections');
+const { connectToDb } = require("../connections");
 
-const getBooks = async (req,res) => {
+const getBooks = async (req, res) => {
   try {
     const db = await connectToDb();
-    const books = db.collection('books');
+    const books = db.collection("books");
 
     const pipeline = [
       {
@@ -12,64 +12,75 @@ const getBooks = async (req,res) => {
           from: "authors",
           localField: "author_id",
           foreignField: "_id",
-          as: "author"
-        }
+          as: "author",
+        },
       },
       {
         $lookup: {
           from: "publishers",
           localField: "publisher_id",
           foreignField: "_id",
-          as: "publisher"
-        }
+          as: "publisher",
+        },
       },
       {
         $lookup: {
           from: "audiobooks",
           localField: "audiobook_id",
           foreignField: "_id",
-          as: "audiobook"
-        }
+          as: "audiobook",
+        },
       },
       {
         $unwind: {
           path: "$author",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $unwind: {
           path: "$publisher",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $unwind: {
           path: "$audiobook",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: "narrators",
           localField: "audiobook.narrator_id",
           foreignField: "_id",
-          as: "narrator"
-        }
+          as: "narrator",
+        },
       },
       {
         $unwind: {
           path: "$narrator",
-          preserveNullAndEmptyArrays: true
-        }
-      }
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ];
 
     const result = await books.aggregate(pipeline).toArray();
-    res.status(200).json({message:result});
+    res.status(200).json({ message: result });
   } catch (err) {
-    res.status(500).json({err:message});
+    res.status(500).json({ err: message });
   }
-}
+};
 
-module.exports = { getBooks };
+const countBooks = async (req, res) => {
+  try {
+    const db = await connectToDb();
+    const books = db.collection("books");
+    const result = await books.find().count();
+    res.status(200).json({ message: "total books of count is " + result });
+  } catch (error) {
+    res.status(500).json({ err: message });
+  }
+};
+
+module.exports = { getBooks, countBooks };
