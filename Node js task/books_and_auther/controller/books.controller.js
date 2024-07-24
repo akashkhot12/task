@@ -1,7 +1,7 @@
 // controllers/booksController.js
 const { connectToDb } = require('../connections');
 
-async function getBooks(req, res) {
+const getBooks = async (req,res) => {
   try {
     const db = await connectToDb();
     const books = db.collection('books');
@@ -66,9 +66,9 @@ async function getBooks(req, res) {
     ];
 
     const result = await books.aggregate(pipeline).toArray();
-    res.json(result);
+    res.status(200).json({message:result})
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({err:message});
   }
 }
 
