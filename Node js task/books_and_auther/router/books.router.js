@@ -1,6 +1,6 @@
 // routes/booksRoutes.js
 const express = require('express');
-const { getBooks } = require('../controller/controller');
+const { getBooks } = require('../controller/books.controller');
 
 const router = express.Router();
 
