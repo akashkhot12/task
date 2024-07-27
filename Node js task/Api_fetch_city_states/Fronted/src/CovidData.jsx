@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const CovidData = () => {
-  const [data, setData] = useState(null);
+const CovidDropdown = () => {
+  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedState, setSelectedState] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,7 +14,6 @@ const CovidData = () => {
           "http://localhost:5000/api/covid_data"
         );
         setData(response.data);
-        console.log(response.data);
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -24,6 +24,10 @@ const CovidData = () => {
     fetchData();
   }, []);
 
+  const handleStateChange = (event) => {
+    setSelectedState(event.target.value);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -32,12 +36,34 @@ const CovidData = () => {
     return <div>Error: {error}</div>;
   }
 
+  const states = Object.keys(data).filter((key) => data[key].statecode);
+
   return (
     <div>
-      <h1>COVID-19 Data</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <h1>Select State</h1>
+      <div>
+        <label>
+          State:
+          <select value={selectedState} onChange={handleStateChange}>
+            <option value="" disabled>
+              Select a state
+            </option>
+            {states.map((state, index) => (
+              <option key={index} value={state}>
+                {state}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {selectedState && (
+        <div>
+          <h2>Selected State Data</h2>
+          <pre>{JSON.stringify(data[selectedState], null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CovidData;
+export default CovidDropdown;
